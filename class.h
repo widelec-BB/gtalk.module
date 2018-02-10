@@ -1,0 +1,64 @@
+/*
+ * Copyright (c) 2015 - 2018 Filip "widelec" Maryjanski, BlaBla group.
+ * All rights reserved.
+ * Distributed under the terms of the GNU Lesser General Public License v2.1.
+ */
+
+#ifndef __CLASS_H__
+#define __CLASS_H__
+
+#include <proto/exec.h>
+#include <proto/intuition.h>
+#include <proto/utility.h>
+#include <proto/dos.h>
+#include <kwakwa_api/protocol.h>
+#include "globaldefines.h"
+#include "iksemel/iksemel.h"
+
+#define STATE_NOT_CONNECTED 0
+#define STATE_CONNECTING 1
+#define STATE_AFTER_HEADER 2
+#define STATE_CONNECTED 3
+
+#define GTM_OpenGMail MAKE_ID(0x00000001) /* deprecated, google removed notifcations on new incoming e-mail */
+
+struct VCardListNode
+{
+	struct MinNode Node;
+	STRPTR Id;
+	Object *Obj;
+	ULONG Method;
+};
+
+struct ObjData
+{
+	/* Put object instance data here (64 kB limit). */
+	Object *App;
+	Object *PrefsPanel;
+	struct TagItem GuiTagList[3];
+	struct MinList EventsList;
+	struct MinList VCardList;
+	iksparser *StreamParser;
+	iksid *Id;
+	ikstack *IksStack;
+	ULONG State;
+	BOOL WantWrite;
+	BOOL Authorized;
+	enum ikshowtype StatusOnConnect;
+	STRPTR DescriptionOnConnect;
+	BOOL EnumerateWindows;
+	LONG Minute, FiveMinutes;
+};
+
+/* don't touch enything below this comment, unless you really know what you are doing... */
+
+struct ClassBase
+{
+	struct Library          LibNode;
+	Class                  *BClass;
+	APTR                    Seglist;
+	struct SignalSemaphore  BaseLock;
+	BOOL                    InitFlag;
+};
+
+#endif /* __CLASS_H__ */
